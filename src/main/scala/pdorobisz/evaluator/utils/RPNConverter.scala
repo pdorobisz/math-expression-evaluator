@@ -5,7 +5,7 @@ import scala.collection.mutable
 /**
  * Reverse Polish Notation converter (shunting-yard algorithm).
  */
-object RPN {
+object RPNConverter {
 
   private val pattern = """\G(\d+|[\(\)*/+-])""".r
 
