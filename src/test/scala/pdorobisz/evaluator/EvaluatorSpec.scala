@@ -3,6 +3,8 @@ package pdorobisz.evaluator
 import org.scalatest._
 import org.scalatest.prop._
 
+import scalaz.Success
+
 class EvaluatorSpec extends PropSpec with TableDrivenPropertyChecks with Matchers {
 
   val correctExpressions = Table(
@@ -25,13 +27,13 @@ class EvaluatorSpec extends PropSpec with TableDrivenPropertyChecks with Matcher
 
   property("evaluator should evaluate correct expression") {
     forAll(correctExpressions) { (expression, expected) =>
-      Evaluator.evaluate(expression) should be(Some(expected))
+      Evaluator.evaluate(expression) should be(Success(expected))
     }
   }
 
   property("evaluator should return None for incorrect expression") {
     forAll(incorrectExpressions) { (expression) =>
-      Evaluator.evaluate(expression) should be(None)
+      Evaluator.evaluate(expression).isFailure should be(true)
     }
   }
 }

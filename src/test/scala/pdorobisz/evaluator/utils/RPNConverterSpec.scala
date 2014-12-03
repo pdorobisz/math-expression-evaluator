@@ -4,6 +4,8 @@ import org.scalatest.prop.TableDrivenPropertyChecks
 import org.scalatest.{Matchers, PropSpec}
 import pdorobisz.evaluator.Evaluator
 
+import scalaz.Success
+
 
 class RPNConverterSpec extends PropSpec with TableDrivenPropertyChecks with Matchers {
 
@@ -33,13 +35,13 @@ class RPNConverterSpec extends PropSpec with TableDrivenPropertyChecks with Matc
 
   property("RPNConverter should convert infix notation to Reverse Polish Notation") {
     forAll(correctExpressions) { (expression: String, expected: Seq[String]) =>
-      RPNConverter.convert(expression) should be(Some(expected))
+      RPNConverter.convert(expression) should be(Success(expected))
     }
   }
 
   property("RPNConverter should return error when incorrect expression") {
     forAll(incorrectExpressions) { (expression) =>
-      RPNConverter.convert(expression) should be(None)
+      RPNConverter.convert(expression).isFailure should be(true)
     }
   }
 }

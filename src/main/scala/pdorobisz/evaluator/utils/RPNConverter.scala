@@ -1,6 +1,9 @@
 package pdorobisz.evaluator.utils
 
+import pdorobisz.evaluator.errors.EvaluatorError
+
 import scala.collection.mutable
+import scalaz.{Success, Failure, Validation}
 
 /**
  * Reverse Polish Notation converter (shunting-yard algorithm).
@@ -9,7 +12,7 @@ object RPNConverter {
 
   private val pattern = """\G(\d+|[\(\)*/+-])""".r
 
-  def convert(expression: String): Option[Seq[String]] = {
+  def convert(expression: String): Validation[EvaluatorError, Seq[String]] = {
     val stack = mutable.Stack[String]()
     val output = mutable.ArrayBuffer[String]()
     var end = 0
@@ -25,7 +28,7 @@ object RPNConverter {
         case "(" => stack.push("(")
         case ")" =>
           while (stack.nonEmpty && !stack.top.equals("(")) output += stack.pop()
-          if (stack.isEmpty) return None
+          if (stack.isEmpty) return Failure(EvaluatorError(""))
           stack.pop()
         case value => output += value
       }
@@ -33,9 +36,9 @@ object RPNConverter {
     }
     }
 
-    if(end != expression.length) return None
+    if(end != expression.length) return Failure(EvaluatorError(""))
     while (stack.nonEmpty && !stack.top.equals("(")) output += stack.pop()
-    if (stack.nonEmpty) return None
-    Some(output)
+    if (stack.nonEmpty) return Failure(EvaluatorError(""))
+    Success(output)
   }
 }
