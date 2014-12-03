@@ -1,5 +1,7 @@
 package pdorobisz.evaluator
 
+import pdorobisz.evaluator.utils.{RPNEvaluator, RPNConverter}
+
 
 /**
  * Mathematical expressions evaluator.
@@ -9,10 +11,6 @@ object Evaluator {
   private val pattern = """\G(\d+|[+-])""".r
 
   def evaluate(expression: String): Option[Int] = {
-    //    val stack = Stack
-    pattern findAllIn expression foreach {
-      case s => println(s)
-    }
-    Some(0)
+    RPNConverter.convert(expression) map RPNEvaluator.evaluate
   }
 }

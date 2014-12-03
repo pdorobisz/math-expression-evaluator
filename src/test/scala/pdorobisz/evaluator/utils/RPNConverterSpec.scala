@@ -32,7 +32,7 @@ class RPNConverterSpec extends PropSpec with TableDrivenPropertyChecks with Matc
   )
 
   property("RPNConverter should convert infix notation to Reverse Polish Notation") {
-    forAll(correctExpressions) { (expression:String, expected:Seq[String]) =>
+    forAll(correctExpressions) { (expression: String, expected: Seq[String]) =>
       RPNConverter.convert(expression) should be(Some(expected))
     }
   }
