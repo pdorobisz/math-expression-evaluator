@@ -1,9 +1,10 @@
 package pdorobisz.evaluator
 
 import pdorobisz.evaluator.errors.EvaluatorError
-import pdorobisz.evaluator.utils.{RPNEvaluator, RPNConverter}
+import pdorobisz.evaluator.utils.{RPNConverter, RPNEvaluator}
 
 import scalaz.Validation
+import scalaz.Validation.FlatMap._
 
 
 /**
