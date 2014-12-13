@@ -1,7 +1,7 @@
 package pdorobisz.evaluator.utils
 
 import pdorobisz.evaluator.errors.EvaluatorError
-import pdorobisz.evaluator.utils.Operators.IsOperator
+import pdorobisz.evaluator.tokens.{Value, EvaluatorToken, Operator}
 
 import scala.collection.mutable
 import scalaz.{Success, Validation}
@@ -11,14 +11,13 @@ import scalaz.{Success, Validation}
  */
 object RPNEvaluator {
 
-  def evaluate(expression: Seq[String]): Validation[EvaluatorError, Int] = {
+  def evaluate(expression: Seq[EvaluatorToken]): Validation[EvaluatorError, Int] = {
     val stack = mutable.Stack[Int]()
     expression foreach {
-      case s@IsOperator() =>
+      case operator: Operator =>
         val (b, a) = (stack.pop(), stack.pop())
-        val operator = Operators.operators(s)
         stack.push(operator(a, b))
-      case value => stack.push(value.toInt)
+      case Value(value) => stack.push(value)
     }
     Success(stack.pop())
   }

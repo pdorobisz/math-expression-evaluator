@@ -1,7 +1,7 @@
 package pdorobisz.evaluator.utils
 
 import pdorobisz.evaluator.errors.EvaluatorError
-import pdorobisz.evaluator.utils.Operators.{IsOperator, operators}
+import pdorobisz.evaluator.tokens._
 
 import scala.collection.mutable
 import scalaz.{Failure, Success, Validation}
@@ -13,29 +13,29 @@ object RPNConverter {
 
   private val pattern = """\G(\d+|[\(\)*/+-])""".r
 
-  def convert(expression: String): Validation[EvaluatorError, Seq[String]] = {
-    val stack = mutable.Stack[String]()
-    val output = mutable.ArrayBuffer[String]()
+  def convert(expression: String): Validation[EvaluatorError, Seq[EvaluatorToken]] = {
+    val stack = mutable.Stack[Token]()
+    val output = mutable.ArrayBuffer[EvaluatorToken]()
     var end = 0
 
     (pattern findAllIn expression).matchData foreach { m => {
       m.matched match {
-        case s@IsOperator() =>
-          while (stack.nonEmpty && IsOperator(stack.top) && operators(s).precedence <= operators(stack.top).precedence) output += stack.pop()
+        case Operator(s) =>
+          while (stack.nonEmpty && stack.top.isInstanceOf[Operator] && s.precedence <= stack.top.asInstanceOf[Operator].precedence) output += stack.pop().asInstanceOf[EvaluatorToken]
           stack.push(s)
-        case "(" => stack.push("(")
+        case "(" => stack.push(LeftParenthesis)
         case ")" =>
-          while (stack.nonEmpty && !stack.top.equals("(")) output += stack.pop()
+          while (stack.nonEmpty && stack.top != LeftParenthesis) output += stack.pop().asInstanceOf[EvaluatorToken]
           if (stack.isEmpty) return Failure(EvaluatorError(""))
           stack.pop()
-        case value => output += value
+        case value => output += Value(value.toInt)
       }
       end = m.end
     }
     }
 
     if (end != expression.length) return Failure(EvaluatorError(""))
-    while (stack.nonEmpty && !stack.top.equals("(")) output += stack.pop()
+    while (stack.nonEmpty && stack.top != LeftParenthesis) output += stack.pop().asInstanceOf[EvaluatorToken]
     if (stack.nonEmpty) return Failure(EvaluatorError(""))
     Success(output)
   }

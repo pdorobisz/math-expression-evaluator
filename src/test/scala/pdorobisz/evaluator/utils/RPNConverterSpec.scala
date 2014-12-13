@@ -3,6 +3,7 @@ package pdorobisz.evaluator.utils
 import org.scalatest.prop.TableDrivenPropertyChecks
 import org.scalatest.{Matchers, PropSpec}
 import pdorobisz.evaluator.Evaluator
+import pdorobisz.evaluator.tokens.{Multiplication, Addition, Value, Token}
 
 import scalaz.Success
 
@@ -11,15 +12,15 @@ class RPNConverterSpec extends PropSpec with TableDrivenPropertyChecks with Matc
 
   val correctExpressions = Table(
     ("expression", "expected result"),
-    ("0", Seq("0")),
-    ("(0)", Seq("0")),
-    ("(0)+(1)", Seq("0", "1", "+")),
-    ("3+4", Seq("3", "4", "+")),
-    ("3+4+5", Seq("3", "4", "+", "5", "+")),
-    ("3+4*5", Seq("3", "4", "5", "*", "+")),
-    ("(2+3)*5", Seq("2", "3", "+", "5", "*")),
-    ("2*(3+4)", Seq("2", "3", "4", "+", "*")),
-    ("(2+3)*(4+5)", Seq("2", "3", "+", "4", "5", "+", "*"))
+    ("0", Seq(Value(0))),
+    ("(0)", Seq(Value(0))),
+    ("(0)+(1)", Seq(Value(0), Value(1), Addition)),
+    ("3+4", Seq(Value(3), Value(4), Addition)),
+    ("3+4+5", Seq(Value(3), Value(4), Addition, Value(5), Addition)),
+    ("3+4*5", Seq(Value(3), Value(4), Value(5), Multiplication, Addition)),
+    ("(2+3)*5", Seq(Value(2), Value(3), Addition, Value(5), Multiplication)),
+    ("2*(3+4)", Seq(Value(2), Value(3), Value(4), Addition, Multiplication)),
+    ("(2+3)*(4+5)", Seq(Value(2), Value(3), Addition, Value(4), Value(5), Addition, Multiplication))
   )
 
   val incorrectExpressions = Table(
@@ -34,7 +35,7 @@ class RPNConverterSpec extends PropSpec with TableDrivenPropertyChecks with Matc
   )
 
   property("RPNConverter should convert infix notation to Reverse Polish Notation") {
-    forAll(correctExpressions) { (expression: String, expected: Seq[String]) =>
+    forAll(correctExpressions) { (expression: String, expected: Seq[Token]) =>
       RPNConverter.convert(expression) should be(Success(expected))
     }
   }
