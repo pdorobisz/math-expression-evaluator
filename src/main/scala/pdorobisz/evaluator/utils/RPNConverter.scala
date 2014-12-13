@@ -1,9 +1,10 @@
 package pdorobisz.evaluator.utils
 
 import pdorobisz.evaluator.errors.EvaluatorError
+import pdorobisz.evaluator.utils.Operators.{IsOperator, operators}
 
 import scala.collection.mutable
-import scalaz.{Success, Failure, Validation}
+import scalaz.{Failure, Success, Validation}
 
 /**
  * Reverse Polish Notation converter (shunting-yard algorithm).
@@ -19,11 +20,8 @@ object RPNConverter {
 
     (pattern findAllIn expression).matchData foreach { m => {
       m.matched match {
-        case s@("-" | "+") =>
-          while (stack.nonEmpty && stack.top.matches("[-+/*]")) output += stack.pop()
-          stack.push(s)
-        case s@("*" | "/") =>
-          while (stack.nonEmpty && stack.top.matches("[/*]")) output += stack.pop()
+        case s@IsOperator() =>
+          while (stack.nonEmpty && IsOperator(stack.top) && operators(s).precedence <= operators(stack.top).precedence) output += stack.pop()
           stack.push(s)
         case "(" => stack.push("(")
         case ")" =>
@@ -36,7 +34,7 @@ object RPNConverter {
     }
     }
 
-    if(end != expression.length) return Failure(EvaluatorError(""))
+    if (end != expression.length) return Failure(EvaluatorError(""))
     while (stack.nonEmpty && !stack.top.equals("(")) output += stack.pop()
     if (stack.nonEmpty) return Failure(EvaluatorError(""))
     Success(output)
