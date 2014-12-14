@@ -12,9 +12,6 @@ import scalaz.Validation.FlatMap._
  */
 object Evaluator {
 
-  private val pattern = """\G(\d+|[+-])""".r
-
-  def evaluate(expression: String): Validation[EvaluatorError, Int] = {
+  def evaluate(expression: String): Validation[EvaluatorError, Int] =
     RPNConverter.convert(expression) flatMap RPNEvaluator.evaluate
-  }
 }
