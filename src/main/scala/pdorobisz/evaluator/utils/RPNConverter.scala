@@ -4,6 +4,7 @@ import pdorobisz.evaluator.errors.EvaluatorError
 import pdorobisz.evaluator.tokens._
 
 import scala.collection.mutable
+import scala.collection.mutable.ArrayBuffer
 import scalaz.{Failure, Success, Validation}
 
 /**
@@ -22,27 +23,37 @@ object RPNConverter {
   def convert(expression: String): Validation[EvaluatorError, Seq[EvaluatorToken]] = {
     val stack = mutable.Stack[Token]()
     val output = mutable.ArrayBuffer[EvaluatorToken]()
-    var end = 0
+    var endPosition = 0
 
     (pattern findAllIn expression).matchData foreach { m => {
       m.matched match {
-        case Operator(s) =>
-          while (stack.nonEmpty && stack.top.isInstanceOf[Operator] && s.precedence <= stack.top.asInstanceOf[Operator].precedence) output += stack.pop().asInstanceOf[EvaluatorToken]
-          stack.push(s)
+        case Operator(operator) =>
+          while (hasLowerPrecedence(operator, stack)) output += popToken(stack)
+          stack.push(operator)
         case "(" => stack.push(LeftParenthesis)
         case ")" =>
-          while (stack.nonEmpty && stack.top != LeftParenthesis) output += stack.pop().asInstanceOf[EvaluatorToken]
+          addOperatorsToOutput(stack, output)
           if (stack.isEmpty) return Failure(EvaluatorError(""))
           stack.pop()
         case value => output += Value(value.toInt)
       }
-      end = m.end
+      endPosition = m.end
     }
     }
 
-    if (end != expression.length) return Failure(EvaluatorError(""))
-    while (stack.nonEmpty && stack.top != LeftParenthesis) output += stack.pop().asInstanceOf[EvaluatorToken]
+    if (endPosition != expression.length) return Failure(EvaluatorError(""))
+    addOperatorsToOutput(stack, output)
     if (stack.nonEmpty) return Failure(EvaluatorError(""))
     Success(output)
   }
+
+  private def popToken(stack: mutable.Stack[Token]): EvaluatorToken = stack.pop().asInstanceOf[EvaluatorToken]
+
+  private def hasLowerPrecedence(operator: Operator, stack: mutable.Stack[Token]): Boolean =
+    stack.headOption.exists(_.isInstanceOf[Operator]) && operator.precedence <= stack.top.asInstanceOf[Operator].precedence
+
+  private def addOperatorsToOutput(stack: mutable.Stack[Token], output: ArrayBuffer[EvaluatorToken]) {
+    while (stack.headOption.exists(_ != LeftParenthesis)) output += popToken(stack)
+  }
+
 }
