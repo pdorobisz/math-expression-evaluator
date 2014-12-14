@@ -12,6 +12,12 @@ import scalaz.Validation.FlatMap._
  */
 object Evaluator {
 
+  /**
+   * Evaluates given expression.
+   *
+   * @param expression string representing expression in infix notation
+   * @return value of expression
+   */
   def evaluate(expression: String): Validation[EvaluatorError, Int] =
     RPNConverter.convert(expression) flatMap RPNEvaluator.evaluate
 }

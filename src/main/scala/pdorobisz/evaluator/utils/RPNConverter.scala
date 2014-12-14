@@ -13,6 +13,12 @@ object RPNConverter {
 
   private val pattern = """\G(\d+|[\(\)*/+-])""".r
 
+  /**
+   * Converts expression in infix notation to Reverse Polish Notation expression.
+   *
+   * @param expression expression in infix notation
+   * @return sequence of tokens representing expression in Reverse Polish Notation or error
+   */
   def convert(expression: String): Validation[EvaluatorError, Seq[EvaluatorToken]] = {
     val stack = mutable.Stack[Token]()
     val output = mutable.ArrayBuffer[EvaluatorToken]()

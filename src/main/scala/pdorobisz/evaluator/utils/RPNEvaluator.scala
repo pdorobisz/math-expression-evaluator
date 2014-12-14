@@ -11,6 +11,12 @@ import scalaz.{Success, Validation}
  */
 object RPNEvaluator {
 
+  /**
+   * Evaluates expression in Reverse Polish Notation.
+   *
+   * @param expression sequence of tokens representing expression in Reverse Polish Notation
+   * @return value of expression or error
+   */
   def evaluate(expression: Seq[EvaluatorToken]): Validation[EvaluatorError, Int] = {
     val stack = mutable.Stack[Int]()
     expression foreach {
