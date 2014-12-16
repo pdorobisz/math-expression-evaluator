@@ -4,11 +4,9 @@ sealed trait Token
 
 case object LeftParenthesis extends Token
 
-sealed trait EvaluatorToken extends Token
+case class Value(value: Int) extends Token
 
-case class Value(value: Int) extends EvaluatorToken
-
-sealed abstract class Operator(val precedence: Int, val expression: (Int, Int) => Int) extends EvaluatorToken {
+sealed abstract class Operator(val precedence: Int, val expression: (Int, Int) => Int) extends Token {
   def apply(a: Int, b: Int): Int = expression(a, b)
 }
 

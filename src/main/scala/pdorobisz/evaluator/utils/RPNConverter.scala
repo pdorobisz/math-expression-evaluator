@@ -20,22 +20,22 @@ object RPNConverter {
    * @param expression expression in infix notation
    * @return sequence of tokens representing expression in Reverse Polish Notation or error
    */
-  def convert(expression: String): Validation[EvaluatorError, Seq[EvaluatorToken]] = {
-    val stack = mutable.Stack[Token]()
-    val output = mutable.ArrayBuffer[EvaluatorToken]()
+  def convert(expression: String): Validation[EvaluatorError, Seq[TokenPosition]] = {
+    val stack = mutable.Stack[TokenPosition]()
+    val output = mutable.ArrayBuffer[TokenPosition]()
     var endPosition = 0
 
     (pattern findAllIn expression).matchData foreach { m => {
       m.matched match {
         case Operator(operator) =>
           while (hasLowerPrecedence(operator, stack)) output += popToken(stack)
-          stack.push(operator)
-        case "(" => stack.push(LeftParenthesis)
+          stack.push(TokenPosition(m.start, operator))
+        case "(" => stack.push(TokenPosition(m.start, LeftParenthesis))
         case ")" =>
           addOperatorsToOutput(stack, output)
           if (stack.isEmpty) return Failure(EvaluatorError(""))
           stack.pop()
-        case value => output += Value(value.toInt)
+        case value => output += TokenPosition(m.start, Value(value.toInt))
       }
       endPosition = m.end
     }
@@ -47,13 +47,14 @@ object RPNConverter {
     Success(output)
   }
 
-  private def popToken(stack: mutable.Stack[Token]): EvaluatorToken = stack.pop().asInstanceOf[EvaluatorToken]
+  private def popToken(stack: mutable.Stack[TokenPosition]): TokenPosition = stack.pop()
 
-  private def hasLowerPrecedence(operator: Operator, stack: mutable.Stack[Token]): Boolean =
-    stack.headOption.exists(_.isInstanceOf[Operator]) && operator.precedence <= stack.top.asInstanceOf[Operator].precedence
+  private def hasLowerPrecedence(operator: Operator, stack: mutable.Stack[TokenPosition]): Boolean =
+    stack.headOption.exists(_.token.isInstanceOf[Operator]) &&
+      operator.precedence <= stack.top.token.asInstanceOf[Operator].precedence
 
-  private def addOperatorsToOutput(stack: mutable.Stack[Token], output: ArrayBuffer[EvaluatorToken]) {
-    while (stack.headOption.exists(_ != LeftParenthesis)) output += popToken(stack)
+  private def addOperatorsToOutput(stack: mutable.Stack[TokenPosition], output: ArrayBuffer[TokenPosition]) {
+    while (stack.headOption.exists(_.token != LeftParenthesis)) output += popToken(stack)
   }
 
 }
