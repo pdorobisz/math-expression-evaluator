@@ -1,3 +1,3 @@
 package pdorobisz.evaluator.tokens
 
-case class TokenPosition(index: Int, token: Token)
+case class TokenPosition(position: Int, token: Token)

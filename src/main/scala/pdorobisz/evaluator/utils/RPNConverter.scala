@@ -1,6 +1,6 @@
 package pdorobisz.evaluator.utils
 
-import pdorobisz.evaluator.errors.EvaluatorError
+import pdorobisz.evaluator.errors.{InvalidIdentifier, EvaluatorError, LeftParenthesisNotMatched, RightParenthesisNotMatched}
 import pdorobisz.evaluator.tokens._
 
 import scala.collection.mutable
@@ -26,24 +26,25 @@ object RPNConverter {
     var endPosition = 0
 
     (pattern findAllIn expression).matchData foreach { m => {
+      val position: Int = m.start
       m.matched match {
         case Operator(operator) =>
           while (hasLowerPrecedence(operator, stack)) output += popToken(stack)
-          stack.push(TokenPosition(m.start, operator))
-        case "(" => stack.push(TokenPosition(m.start, LeftParenthesis))
+          stack.push(TokenPosition(position, operator))
+        case "(" => stack.push(TokenPosition(position, LeftParenthesis))
         case ")" =>
           addOperatorsToOutput(stack, output)
-          if (stack.isEmpty) return Failure(EvaluatorError(""))
+          if (stack.isEmpty) return Failure(RightParenthesisNotMatched(position))
           stack.pop()
-        case value => output += TokenPosition(m.start, Value(value.toInt))
+        case value => output += TokenPosition(position, Value(value.toInt))
       }
       endPosition = m.end
     }
     }
 
-    if (endPosition != expression.length) return Failure(EvaluatorError(""))
+    if (endPosition != expression.length) return Failure(InvalidIdentifier(endPosition))
     addOperatorsToOutput(stack, output)
-    if (stack.nonEmpty) return Failure(EvaluatorError(""))
+    if (stack.nonEmpty) return Failure(LeftParenthesisNotMatched(stack.head.position))
     Success(output)
   }
 

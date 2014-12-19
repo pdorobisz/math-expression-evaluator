@@ -2,9 +2,10 @@ package pdorobisz.evaluator.utils
 
 import org.scalatest.prop.TableDrivenPropertyChecks
 import org.scalatest.{Matchers, PropSpec}
+import pdorobisz.evaluator.errors.{LeftParenthesisNotMatched, RightParenthesisNotMatched, InvalidIdentifier}
 import pdorobisz.evaluator.tokens._
 
-import scalaz.Success
+import scalaz.{Failure, Success}
 
 
 class RPNConverterSpec extends PropSpec with TableDrivenPropertyChecks with Matchers {
@@ -32,14 +33,14 @@ class RPNConverterSpec extends PropSpec with TableDrivenPropertyChecks with Matc
   )
 
   val incorrectExpressions = Table(
-    "expression",
-    "0g",
-    "a",
-    "1)(",
-    "((1)",
-    "(1))",
-    "(1+2",
-    "1+2)"
+    ("expression", "expected result"),
+    ("0g", InvalidIdentifier(1)),
+    ("a", InvalidIdentifier(0)),
+    ("1)(", RightParenthesisNotMatched(1)),
+    ("((1)", LeftParenthesisNotMatched(0)),
+    ("(1))", RightParenthesisNotMatched(3)),
+    ("(1+2", LeftParenthesisNotMatched(0)),
+    ("1+2)", RightParenthesisNotMatched(3))
   )
 
   property("RPNConverter should convert infix notation to Reverse Polish Notation (without positions)") {
@@ -55,8 +56,8 @@ class RPNConverterSpec extends PropSpec with TableDrivenPropertyChecks with Matc
   }
 
   property("RPNConverter should return error when incorrect expression") {
-    forAll(incorrectExpressions) { (expression) =>
-      RPNConverter.convert(expression).isFailure should be(true)
+    forAll(incorrectExpressions) { (expression, expected) =>
+      RPNConverter.convert(expression) should be(Failure(expected))
     }
   }
 }

@@ -2,8 +2,9 @@ package pdorobisz.evaluator
 
 import org.scalatest._
 import org.scalatest.prop._
+import pdorobisz.evaluator.errors.LeftParenthesisNotMatched
 
-import scalaz.Success
+import scalaz.{Failure, Success}
 
 class EvaluatorSpec extends PropSpec with TableDrivenPropertyChecks with Matchers {
 
@@ -21,8 +22,8 @@ class EvaluatorSpec extends PropSpec with TableDrivenPropertyChecks with Matcher
   )
 
   val incorrectExpressions = Table(
-    "expression",
-    "(0"
+    ("expression", "expected result"),
+    ("(0", LeftParenthesisNotMatched(0))
   )
 
   property("evaluator should evaluate correct expression") {
@@ -32,8 +33,8 @@ class EvaluatorSpec extends PropSpec with TableDrivenPropertyChecks with Matcher
   }
 
   property("evaluator should return None for incorrect expression") {
-    forAll(incorrectExpressions) { (expression) =>
-      Evaluator.evaluate(expression).isFailure should be(true)
+    forAll(incorrectExpressions) { (expression, expected) =>
+      Evaluator.evaluate(expression) should be(Failure(expected))
     }
   }
 }
