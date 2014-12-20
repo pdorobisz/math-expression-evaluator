@@ -1,25 +1,24 @@
 package pdorobisz.evaluator.utils
 
 import org.scalatest.prop.TableDrivenPropertyChecks
-import org.scalatest.prop.Tables.Table
 import org.scalatest.{Matchers, PropSpec}
 import pdorobisz.evaluator.errors.MisplacedOperator
 import pdorobisz.evaluator.tokens._
 
 import scalaz.{Failure, Success}
 
-class RPNEvaluatorSpec extends PropSpec with TableDrivenPropertyChecks with Matchers {
+class RPNEvaluatorSpec extends PropSpec with TableDrivenPropertyChecks with Matchers with TokenFactory {
 
   val correctExpressions = Table(
     ("expression", "expected result"),
-    (Seq(TokenPosition(0, Value(0))), 0),
-    (Seq(TokenPosition(0, Value(1)), TokenPosition(2, Value(2)), TokenPosition(1, Addition)), 3),
-    (Seq(TokenPosition(0, Value(1)), TokenPosition(2, Value(2)), TokenPosition(1, Subtraction)), -1)
+    (Seq(value(0, 0)), 0),
+    (Seq(value(0, 1), value(2, 2), addition(1)), 3),
+    (Seq(value(0, 1), value(2, 2), subtraction(1)), -1)
   )
 
   val incorrectExpressions = Table(
     ("expression", "expected result"),
-    (Seq(TokenPosition(0, Value(10)), TokenPosition(1, Addition), TokenPosition(3, Value(20)), TokenPosition(2, Addition)), MisplacedOperator(1))
+    (Seq(value(0, 10), addition(1), value(3, 20), addition(2)), MisplacedOperator(1))
   )
 
   property("RPNEvaluator should evaluate Reverse Polish Notation expression") {

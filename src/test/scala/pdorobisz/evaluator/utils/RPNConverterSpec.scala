@@ -2,13 +2,13 @@ package pdorobisz.evaluator.utils
 
 import org.scalatest.prop.TableDrivenPropertyChecks
 import org.scalatest.{Matchers, PropSpec}
-import pdorobisz.evaluator.errors.{LeftParenthesisNotMatched, RightParenthesisNotMatched, InvalidIdentifier}
+import pdorobisz.evaluator.errors.{InvalidIdentifier, LeftParenthesisNotMatched, RightParenthesisNotMatched}
 import pdorobisz.evaluator.tokens._
 
 import scalaz.{Failure, Success}
 
 
-class RPNConverterSpec extends PropSpec with TableDrivenPropertyChecks with Matchers {
+class RPNConverterSpec extends PropSpec with TableDrivenPropertyChecks with Matchers with TokenFactory {
 
   val correctExpressionsWithoutPositions = Table(
     ("expression", "expected result"),
@@ -25,13 +25,13 @@ class RPNConverterSpec extends PropSpec with TableDrivenPropertyChecks with Matc
 
   val correctExpressions = Table(
     ("expression", "expected result"),
-    ("0", Seq(TokenPosition(0, Value(0)))),
-    ("(0)", Seq(TokenPosition(1, Value(0)))),
-    ("(2+3)*5", Seq(TokenPosition(1, Value(2)), TokenPosition(3, Value(3)), TokenPosition(2, Addition), TokenPosition(6, Value(5)), TokenPosition(5, Multiplication))),
-    ("2*(3+4)", Seq(TokenPosition(0, Value(2)), TokenPosition(3, Value(3)), TokenPosition(5, Value(4)), TokenPosition(4, Addition), TokenPosition(1, Multiplication))),
-    ("(2+3)*(4+5)", Seq(TokenPosition(1, Value(2)), TokenPosition(3, Value(3)), TokenPosition(2, Addition), TokenPosition(7, Value(4)), TokenPosition(9, Value(5)), TokenPosition(8, Addition), TokenPosition(5, Multiplication))),
-    ("0+", Seq(TokenPosition(0, Value(0)), TokenPosition(1, Addition))),
-    ("0++1", Seq(TokenPosition(0, Value(0)), TokenPosition(1, Addition), TokenPosition(3, Value(1)), TokenPosition(2, Addition)))
+    ("10", Seq(value(0, 10))),
+    ("(10)", Seq(value(1, 10))),
+    ("(2+3)*5", Seq(value(1, 2), value(3, 3), addition(2), value(6, 5), multiplication(5))),
+    ("2*(3+4)", Seq(value(0, 2), value(3, 3), value(5, 4), addition(4), multiplication(1))),
+    ("(2+3)*(4+5)", Seq(value(1, 2), value(3, 3), addition(2), value(7, 4), value(9, 5), addition(8), multiplication(5))),
+    ("10+", Seq(value(0, 10), addition(2))),
+    ("5++6", Seq(value(0, 5), addition(1), value(3, 6), addition(2)))
   )
 
   val incorrectExpressions = Table(
