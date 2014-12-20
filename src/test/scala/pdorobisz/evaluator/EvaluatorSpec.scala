@@ -2,7 +2,7 @@ package pdorobisz.evaluator
 
 import org.scalatest._
 import org.scalatest.prop._
-import pdorobisz.evaluator.errors.LeftParenthesisNotMatched
+import pdorobisz.evaluator.errors.{MisplacedOperator, LeftParenthesisNotMatched}
 
 import scalaz.{Failure, Success}
 
@@ -23,7 +23,10 @@ class EvaluatorSpec extends PropSpec with TableDrivenPropertyChecks with Matcher
 
   val incorrectExpressions = Table(
     ("expression", "expected result"),
-    ("(0", LeftParenthesisNotMatched(0))
+    ("(0", LeftParenthesisNotMatched(0)),
+    ("0+", MisplacedOperator(1)),
+    ("0++1", MisplacedOperator(1)),
+    ("+", MisplacedOperator(0))
   )
 
   property("evaluator should evaluate correct expression") {

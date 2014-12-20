@@ -29,7 +29,9 @@ class RPNConverterSpec extends PropSpec with TableDrivenPropertyChecks with Matc
     ("(0)", Seq(TokenPosition(1, Value(0)))),
     ("(2+3)*5", Seq(TokenPosition(1, Value(2)), TokenPosition(3, Value(3)), TokenPosition(2, Addition), TokenPosition(6, Value(5)), TokenPosition(5, Multiplication))),
     ("2*(3+4)", Seq(TokenPosition(0, Value(2)), TokenPosition(3, Value(3)), TokenPosition(5, Value(4)), TokenPosition(4, Addition), TokenPosition(1, Multiplication))),
-    ("(2+3)*(4+5)", Seq(TokenPosition(1, Value(2)), TokenPosition(3, Value(3)), TokenPosition(2, Addition), TokenPosition(7, Value(4)), TokenPosition(9, Value(5)), TokenPosition(8, Addition), TokenPosition(5, Multiplication)))
+    ("(2+3)*(4+5)", Seq(TokenPosition(1, Value(2)), TokenPosition(3, Value(3)), TokenPosition(2, Addition), TokenPosition(7, Value(4)), TokenPosition(9, Value(5)), TokenPosition(8, Addition), TokenPosition(5, Multiplication))),
+    ("0+", Seq(TokenPosition(0, Value(0)), TokenPosition(1, Addition))),
+    ("0++1", Seq(TokenPosition(0, Value(0)), TokenPosition(1, Addition), TokenPosition(3, Value(1)), TokenPosition(2, Addition)))
   )
 
   val incorrectExpressions = Table(
