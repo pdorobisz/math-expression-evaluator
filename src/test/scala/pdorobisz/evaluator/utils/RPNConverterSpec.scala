@@ -13,8 +13,11 @@ class RPNConverterSpec extends PropSpec with TableDrivenPropertyChecks with Matc
   val correctExpressionsWithoutPositions = Table(
     ("expression", "expected result"),
     ("0", Seq(Value(0))),
+    (" 0  ", Seq(Value(0))),
     ("(0)", Seq(Value(0))),
+    (" (   0 )  ", Seq(Value(0))),
     ("(0)+(1)", Seq(Value(0), Value(1), Addition)),
+    (" ( 0 ) + (  1   )", Seq(Value(0), Value(1), Addition)),
     ("3+4", Seq(Value(3), Value(4), Addition)),
     ("3+4+5", Seq(Value(3), Value(4), Addition, Value(5), Addition)),
     ("3+4*5", Seq(Value(3), Value(4), Value(5), Multiplication, Addition)),
@@ -28,6 +31,7 @@ class RPNConverterSpec extends PropSpec with TableDrivenPropertyChecks with Matc
     ("10", Seq(value(0, 10))),
     ("(10)", Seq(value(1, 10))),
     ("(2+3)*5", Seq(value(1, 2), value(3, 3), addition(2), value(6, 5), multiplication(5))),
+    (" ( 2 + 3 ) * 5 ", Seq(value(3, 2), value(7, 3), addition(5), value(13, 5), multiplication(11))),
     ("2*(3+4)", Seq(value(0, 2), value(3, 3), value(5, 4), addition(4), multiplication(1))),
     ("(2+3)*(4+5)", Seq(value(1, 2), value(3, 3), addition(2), value(7, 4), value(9, 5), addition(8), multiplication(5))),
     ("10+", Seq(value(0, 10), addition(2))),
@@ -39,8 +43,10 @@ class RPNConverterSpec extends PropSpec with TableDrivenPropertyChecks with Matc
     ("0g", InvalidIdentifier(1)),
     ("a", InvalidIdentifier(0)),
     ("1)(", RightParenthesisNotMatched(1)),
+    ("1 )(", RightParenthesisNotMatched(2)),
     ("((1)", LeftParenthesisNotMatched(0)),
     ("(1))", RightParenthesisNotMatched(3)),
+    ("(1 ) )", RightParenthesisNotMatched(5)),
     ("(1+2", LeftParenthesisNotMatched(0)),
     ("1+2)", RightParenthesisNotMatched(3))
   )

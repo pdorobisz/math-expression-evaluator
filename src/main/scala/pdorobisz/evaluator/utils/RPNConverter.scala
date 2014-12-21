@@ -12,7 +12,7 @@ import scalaz.{Failure, Success, Validation}
  */
 object RPNConverter {
 
-  private val pattern = """\G(\d+|[\(\)*/+-])""".r
+  private val pattern = """\G(\d+|[\(\)*/+-]|\s+)""".r
 
   /**
    * Converts expression in infix notation to Reverse Polish Notation expression.
@@ -36,7 +36,8 @@ object RPNConverter {
           addOperatorsToOutput(stack, output)
           if (stack.isEmpty) return Failure(RightParenthesisNotMatched(position))
           stack.pop()
-        case value => output += TokenPosition(position, Value(value.toInt))
+        case value if isNotEmpty(value) => output += TokenPosition(position, Value(value.toInt))
+        case _ => None
       }
       endPosition = m.end
     }
@@ -55,5 +56,7 @@ object RPNConverter {
   private def addOperatorsToOutput(stack: mutable.Stack[TokenPosition], output: ArrayBuffer[TokenPosition]) {
     while (stack.headOption.exists(_.token != LeftParenthesis)) output += stack.pop()
   }
+
+  private def isNotEmpty(s: String): Boolean = !s.trim.isEmpty
 
 }

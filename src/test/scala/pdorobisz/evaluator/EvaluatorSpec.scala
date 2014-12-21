@@ -11,14 +11,17 @@ class EvaluatorSpec extends PropSpec with TableDrivenPropertyChecks with Matcher
   val correctExpressions = Table(
     ("expression", "expected result"),
     ("0", 0),
+    (" 0  ", 0),
     ("(0)", 0),
     ("(0)+(1)", 1),
+    ("    ( 0 ) + (1) ", 1),
     ("3+4", 7),
     ("3+4+5", 12),
     ("3+4*5", 23),
     ("(2+3)*5", 25),
     ("2*(3+4)", 14),
-    ("(2+3)*(4+5)", 45)
+    ("(2+3)*(4+5)", 45),
+    ("  ( 2 +  3) * (4 +5 ) ", 45)
   )
 
   val incorrectExpressions = Table(
