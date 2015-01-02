@@ -29,7 +29,7 @@ object RPNConverter {
       val position: Int = m.start
       m.matched match {
         case Operator(operator) =>
-          while (hasLowerPrecedence(operator, stack)) output += stack.pop()
+          while (operatorOnStackHasHigherPrecedence(operator, stack)) output += stack.pop()
           stack.push(TokenPosition(position, operator))
         case "(" => stack.push(TokenPosition(position, LeftParenthesis))
         case ")" =>
@@ -49,7 +49,7 @@ object RPNConverter {
     Success(output)
   }
 
-  private def hasLowerPrecedence(operator: Operator, stack: mutable.Stack[TokenPosition]): Boolean =
+  private def operatorOnStackHasHigherPrecedence(operator: Operator, stack: mutable.Stack[TokenPosition]): Boolean =
     stack.headOption.exists(_.token.isInstanceOf[Operator]) &&
       operator.precedence <= stack.top.token.asInstanceOf[Operator].precedence
 
