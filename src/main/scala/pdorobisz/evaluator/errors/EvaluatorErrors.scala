@@ -11,3 +11,5 @@ case class RightParenthesisNotMatched(position: Int) extends EvaluatorError
 case class InvalidIdentifier(position: Int) extends EvaluatorError
 
 case class MisplacedOperator(position: Int) extends EvaluatorError
+
+case class DivideByZero(position: Int) extends EvaluatorError
