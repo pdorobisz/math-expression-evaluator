@@ -1,6 +1,6 @@
 package pdorobisz.evaluator.errors
 
-trait EvaluatorError {
+sealed trait EvaluatorError {
   val position: Int
 }
 
