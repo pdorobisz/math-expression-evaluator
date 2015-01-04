@@ -1,7 +1,7 @@
 package pdorobisz.evaluator.test
 
 import org.scalatest.prop.Tables.Table
-import pdorobisz.evaluator.errors.{MisplacedOperator, RightParenthesisNotMatched, LeftParenthesisNotMatched, InvalidIdentifier}
+import pdorobisz.evaluator.errors._
 import pdorobisz.evaluator.tokens.TokenFactory
 
 object TestData extends TokenFactory {
@@ -63,9 +63,15 @@ object TestData extends TokenFactory {
 
   val notEvaluableExpressions = Table(
     ("not evaluable expression", "RPN form", "expected error"),
+    // misplaced operators
     ("10+", Seq(value(0, 10), addition(2)), MisplacedOperator(2)),
     ("+10", Seq(value(1, 10), addition(0)), MisplacedOperator(0)),
     ("5++6", Seq(value(0, 5), addition(1), value(3, 6), addition(2)), MisplacedOperator(1)),
-    ("+", Seq(addition(0)), MisplacedOperator(0))
+    ("+", Seq(addition(0)), MisplacedOperator(0)),
+
+    // divide by zero
+    ("1/0", Seq(value(0, 1), value(2, 0), division(1)), DivideByZero(1)),
+    ("1/1/0", Seq(value(0, 1), value(2, 1), division(1), value(4,0), division(3)), DivideByZero(3)),
+    ("1/(2-2)", Seq(value(0, 1), value(3, 2), value(5, 2), subtraction(4), division(1)), DivideByZero(1))
   )
 }
