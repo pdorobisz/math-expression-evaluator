@@ -2,6 +2,7 @@ package pdorobisz.evaluator
 
 import pdorobisz.evaluator.errors.EvaluatorError
 import pdorobisz.evaluator.utils.{RPNConverter, RPNEvaluator}
+import spire.math.Rational
 
 import scalaz.Validation
 import scalaz.Validation.FlatMap._
@@ -18,6 +19,6 @@ object Evaluator {
    * @param expression string representing expression in infix notation
    * @return value of expression
    */
-  def evaluate(expression: String): Validation[EvaluatorError, Int] =
+  def evaluate(expression: String): Validation[EvaluatorError, Rational] =
     RPNConverter.convert(expression) flatMap RPNEvaluator.evaluate
 }

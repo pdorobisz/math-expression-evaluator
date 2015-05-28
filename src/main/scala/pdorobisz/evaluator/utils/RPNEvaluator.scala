@@ -2,6 +2,7 @@ package pdorobisz.evaluator.utils
 
 import pdorobisz.evaluator.errors.{MisplacedOperator, EvaluatorError}
 import pdorobisz.evaluator.tokens.{Operator, TokenPosition, Value}
+import spire.math.Rational
 
 import scala.collection.mutable
 import scalaz.{Failure, Success, Validation}
@@ -17,8 +18,8 @@ object RPNEvaluator {
    * @param expression sequence of tokens representing expression in Reverse Polish Notation
    * @return value of expression or error
    */
-  def evaluate(expression: Seq[TokenPosition]): Validation[EvaluatorError, Int] = {
-    val stack = mutable.Stack[Int]()
+  def evaluate(expression: Seq[TokenPosition]): Validation[EvaluatorError, Rational] = {
+    val stack = mutable.Stack[Rational]()
     expression foreach {
       case TokenPosition(pos, operator: Operator) => getArguments(stack) match {
         case Some((arg1, arg2)) => operator(arg1, arg2) match {
@@ -32,7 +33,7 @@ object RPNEvaluator {
     Success(stack.pop())
   }
 
-  private def getArguments(stack: mutable.Stack[Int]): Option[(Int, Int)] = {
+  private def getArguments(stack: mutable.Stack[Rational]): Option[(Rational, Rational)] = {
     if (stack.nonEmpty) {
       val arg2 = stack.pop()
       if (stack.nonEmpty) {
