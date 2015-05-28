@@ -3,6 +3,7 @@ package pdorobisz.evaluator.test
 import org.scalatest.prop.Tables.Table
 import pdorobisz.evaluator.errors._
 import pdorobisz.evaluator.tokens.TokenFactory
+import spire.math.Rational
 
 object TestData extends TokenFactory {
 
@@ -21,6 +22,7 @@ object TestData extends TokenFactory {
     ("3-5", Seq(value(0, 3), value(2, 5), subtraction(1)), -2),
     ("3*5", Seq(value(0, 3), value(2, 5), multiplication(1)), 15),
     ("8/4", Seq(value(0, 8), value(2, 4), division(1)), 2),
+    ("4/6", Seq(value(0, 4), value(2, 6), division(1)), Rational(2, 3)),
 
     // operators priority
     ("3+5-6", Seq(value(0, 3), value(2, 5), addition(1), value(4, 6), subtraction(3)), 2),
@@ -35,6 +37,8 @@ object TestData extends TokenFactory {
     ("2*(3+4)", Seq(value(0, 2), value(3, 3), value(5, 4), addition(4), multiplication(1)), 14),
     ("(3+4)*2", Seq(value(1, 3), value(3, 4), addition(2), value(6, 2), multiplication(5)), 14),
     ("(2+3)*(4+5)", Seq(value(1, 2), value(3, 3), addition(2), value(7, 4), value(9, 5), addition(8), multiplication(5)), 45),
+    ("(2/3)*(3/4)", Seq(value(1, 2), value(3, 3), division(2), value(7, 3), value(9, 4), division(8), multiplication(5)), Rational(1, 2)),
+    ("(2/3)/(3/4)", Seq(value(1, 2), value(3, 3), division(2), value(7, 3), value(9, 4), division(8), division(5)), Rational(8, 9)),
 
     // expressions with spaces
     (" ( 2 + 3 ) * 5 ", Seq(value(3, 2), value(7, 3), addition(5), value(13, 5), multiplication(11)), 25),
@@ -44,7 +48,9 @@ object TestData extends TokenFactory {
     ("81/9/3", Seq(value(0, 81), value(3, 9), division(2), value(5, 3), division(4)), 3),
     ("81/(9/3)", Seq(value(0, 81), value(4, 9), value(6, 3), division(5), division(2)), 27),
     ("81-9-3", Seq(value(0, 81), value(3, 9), subtraction(2), value(5, 3), subtraction(4)), 69),
-    ("81-(9-3)", Seq(value(0, 81), value(4, 9), value(6, 3), subtraction(5), subtraction(2)), 75)
+    ("81-(9-3)", Seq(value(0, 81), value(4, 9), value(6, 3), subtraction(5), subtraction(2)), 75),
+    ("1/2-2/3", Seq(value(0, 1), value(2, 2), division(1), value(4, 2), value(6, 3), division(5), subtraction(3)), Rational(-1, 6)),
+    ("1/2+2/3", Seq(value(0, 1), value(2, 2), division(1), value(4, 2), value(6, 3), division(5), addition(3)), Rational(7, 6))
   )
 
   val notParsableExpressions = Table(
@@ -71,7 +77,7 @@ object TestData extends TokenFactory {
 
     // divide by zero
     ("1/0", Seq(value(0, 1), value(2, 0), division(1)), DivideByZero(1)),
-    ("1/1/0", Seq(value(0, 1), value(2, 1), division(1), value(4,0), division(3)), DivideByZero(3)),
+    ("1/1/0", Seq(value(0, 1), value(2, 1), division(1), value(4, 0), division(3)), DivideByZero(3)),
     ("1/(2-2)", Seq(value(0, 1), value(3, 2), value(5, 2), subtraction(4), division(1)), DivideByZero(1))
   )
 }
