@@ -24,21 +24,25 @@ object RPNConverter {
     val stack = mutable.Stack[TokenPosition]()
     val output = mutable.ArrayBuffer[TokenPosition]()
     var endPosition = 0
+    var previous = ""
 
     (pattern findAllIn expression).matchData foreach { m => {
       val position: Int = m.start
-      m.matched match {
+      (m.matched, previous) match {
         case Operator(operator) =>
           while (operatorOnStackHasHigherPrecedence(operator, stack)) output += stack.pop()
           stack.push(TokenPosition(position, operator))
-        case "(" => stack.push(TokenPosition(position, LeftParenthesis))
-        case ")" =>
+        case ("(", _) =>
+          stack.push(TokenPosition(position, LeftParenthesis))
+        case (")", _) =>
           addOperatorsToOutput(stack, output)
           if (stack.isEmpty) return Failure(RightParenthesisNotMatched(position))
           stack.pop()
-        case value if isNotEmpty(value) => output += TokenPosition(position, Value(value.toInt))
+        case (value, _) if isNotEmpty(value) =>
+          output += TokenPosition(position, Value(value.toInt))
         case _ => None
       }
+      previous = m.matched
       endPosition = m.end
     }
     }

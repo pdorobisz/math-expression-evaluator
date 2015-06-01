@@ -11,24 +11,27 @@ case object LeftParenthesis extends Token
 
 case class Value(value: Rational) extends Token
 
-sealed abstract class Operator(val precedence: Int, val expression: (Rational, Rational) => Validation[OperatorError, Rational]) extends Token {
-  def apply(a: Rational, b: Rational): Validation[OperatorError, Rational] = expression(a, b)
+sealed abstract class Operator(val precedence: Int, val unary: Boolean, private val expression: IndexedSeq[Rational] => Validation[OperatorError, Rational]) extends Token {
+  def apply(args: IndexedSeq[Rational]): Validation[OperatorError, Rational] = expression(args)
 }
 
 object Operator {
-  def unapply(s: String): Option[Operator] = s match {
-    case "+" => Some(Addition)
-    case "-" => Some(Subtraction)
-    case "*" => Some(Multiplication)
-    case "/" => Some(Division)
+  def unapply(x: (String, String)): Option[Operator] = (x._1, x._2) match {
+    case ("+", _) => Some(Addition)
+    case ("-", "" | "(") => Some(UnaryMinus)
+    case ("-", _) => Some(Subtraction)
+    case ("*", _) => Some(Multiplication)
+    case ("/", _) => Some(Division)
     case _ => None
   }
 }
 
-case object Addition extends Operator(1, (x, y) => Success(x + y))
+case object Addition extends Operator(1, false, args => Success(args(0) + args(1)))
 
-case object Subtraction extends Operator(1, (x, y) => Success(x - y))
+case object Subtraction extends Operator(1, false, args => Success(args(0) - args(1)))
 
-case object Multiplication extends Operator(2, (x, y) => Success(x * y))
+case object UnaryMinus extends Operator(2, true, args => Success(-args(0)))
 
-case object Division extends Operator(2, (x, y) => if (y != Rational(0)) Success(x / y) else Failure(DivideByZeroError))
+case object Multiplication extends Operator(3, false, args => Success(args(0) * args(1)))
+
+case object Division extends Operator(3, false, args => if (args(1) != Rational(0)) Success(args(0) / args(1)) else Failure(DivideByZeroError))

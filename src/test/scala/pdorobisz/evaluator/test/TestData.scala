@@ -12,6 +12,8 @@ object TestData extends TokenFactory {
 
     // single value
     ("10", Seq(value(0, 10)), 10),
+    ("-10", Seq(value(1, 10), unaryMinus(0)), -10),
+    ("- 10", Seq(value(2, 10), unaryMinus(0)), -10),
     (" 10", Seq(value(1, 10)), 10),
     ("  10  ", Seq(value(2, 10)), 10),
     ("(10)", Seq(value(1, 10)), 10),
@@ -29,9 +31,13 @@ object TestData extends TokenFactory {
     ("15/5*6", Seq(value(0, 15), value(3, 5), division(2), value(5, 6), multiplication(4)), 18),
     ("3+5*6", Seq(value(0, 3), value(2, 5), value(4, 6), multiplication(3), addition(1)), 33),
     ("4+12/4", Seq(value(0, 4), value(2, 12), value(5, 4), division(4), addition(1)), 7),
+    ("-2+3", Seq(value(1, 2), unaryMinus(0), value(3, 3), addition(2)), 1),
+    ("-2*3", Seq(value(1, 2), value(3, 3), multiplication(2), unaryMinus(0)), -6),
 
     // expressions with parenthesis
     ("(5)+(6)", Seq(value(1, 5), value(5, 6), addition(3)), 11),
+    ("-(5+6)", Seq(value(2, 5), value(4, 6), addition(3), unaryMinus(0)), -11),
+    ("(5)+(-6)", Seq(value(1, 5), value(6, 6), unaryMinus(5), addition(3)), -1),
     ("(2+3)*5", Seq(value(1, 2), value(3, 3), addition(2), value(6, 5), multiplication(5)), 25),
     ("(2-3)*5", Seq(value(1, 2), value(3, 3), subtraction(2), value(6, 5), multiplication(5)), -5),
     ("2*(3+4)", Seq(value(0, 2), value(3, 3), value(5, 4), addition(4), multiplication(1)), 14),
@@ -39,8 +45,10 @@ object TestData extends TokenFactory {
     ("(2+3)*(4+5)", Seq(value(1, 2), value(3, 3), addition(2), value(7, 4), value(9, 5), addition(8), multiplication(5)), 45),
     ("(2/3)*(3/4)", Seq(value(1, 2), value(3, 3), division(2), value(7, 3), value(9, 4), division(8), multiplication(5)), Rational(1, 2)),
     ("(2/3)/(3/4)", Seq(value(1, 2), value(3, 3), division(2), value(7, 3), value(9, 4), division(8), division(5)), Rational(8, 9)),
+    ("4/(-6)", Seq(value(0, 4), value(4, 6), unaryMinus(3), division(1)), Rational(-2, 3)),
 
     // expressions with spaces
+    ("1 - 2", Seq(value(0, 1), value(4, 2), subtraction(2)), -1),
     (" ( 2 + 3 ) * 5 ", Seq(value(3, 2), value(7, 3), addition(5), value(13, 5), multiplication(11)), 25),
     ("   (  2   + 3 ) *5       ", Seq(value(6, 2), value(12, 3), addition(10), value(17, 5), multiplication(16)), 25),
 
@@ -73,7 +81,14 @@ object TestData extends TokenFactory {
     ("10+", Seq(value(0, 10), addition(2)), MisplacedOperator(2)),
     ("+10", Seq(value(1, 10), addition(0)), MisplacedOperator(0)),
     ("5++6", Seq(value(0, 5), addition(1), value(3, 6), addition(2)), MisplacedOperator(1)),
+    ("5+-6", Seq(value(0, 5), addition(1), value(3, 6), subtraction(2)), MisplacedOperator(1)),
+    ("5*/6", Seq(value(0, 5), multiplication(1), value(3, 6), division(2)), MisplacedOperator(1)),
+    ("5+/6", Seq(value(0, 5), value(3, 6), division(2), addition(1)), MisplacedOperator(1)),
+    ("++1", Seq(addition(0), value(2, 1), addition(1)), MisplacedOperator(0)),
+    ("--1", Seq(unaryMinus(0), value(2, 1), subtraction(1)), MisplacedOperator(0)),
+    ("- - 1", Seq(unaryMinus(0), value(4, 1), subtraction(2)), MisplacedOperator(0)),
     ("+", Seq(addition(0)), MisplacedOperator(0)),
+    ("-", Seq(unaryMinus(0)), MisplacedOperator(0)),
 
     // divide by zero
     ("1/0", Seq(value(0, 1), value(2, 0), division(1)), DivideByZero(1)),

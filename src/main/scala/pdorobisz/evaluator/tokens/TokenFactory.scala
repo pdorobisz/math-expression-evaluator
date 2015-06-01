@@ -12,4 +12,6 @@ trait TokenFactory {
   def multiplication(pos: Int): TokenPosition = TokenPosition(pos, Multiplication)
 
   def division(pos: Int): TokenPosition = TokenPosition(pos, Division)
+
+  def unaryMinus(pos: Int): TokenPosition = TokenPosition(pos, UnaryMinus)
 }

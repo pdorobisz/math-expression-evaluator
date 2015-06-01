@@ -21,8 +21,8 @@ object RPNEvaluator {
   def evaluate(expression: Seq[TokenPosition]): Validation[EvaluatorError, Rational] = {
     val stack = mutable.Stack[Rational]()
     expression foreach {
-      case TokenPosition(pos, operator: Operator) => getArguments(stack) match {
-        case Some((arg1, arg2)) => operator(arg1, arg2) match {
+      case TokenPosition(pos, operator: Operator) => getArguments(stack, operator) match {
+        case Some(args) => operator(args) match {
           case Success(result) => stack.push(result)
           case Failure(error) => return Failure(EvaluatorError.fromOperatorError(pos, error))
         }
@@ -33,13 +33,11 @@ object RPNEvaluator {
     Success(stack.pop())
   }
 
-  private def getArguments(stack: mutable.Stack[Rational]): Option[(Rational, Rational)] = {
+  private def getArguments(stack: mutable.Stack[Rational], operator: Operator): Option[IndexedSeq[Rational]] = {
     if (stack.nonEmpty) {
-      val arg2 = stack.pop()
-      if (stack.nonEmpty) {
-        val arg1 = stack.pop()
-        return Some((arg1, arg2))
-      }
+      val arg = stack.pop()
+      if (operator.unary) return Some(IndexedSeq(arg))
+      if (stack.nonEmpty) return Some(IndexedSeq(stack.pop(), arg))
     }
     None
   }
