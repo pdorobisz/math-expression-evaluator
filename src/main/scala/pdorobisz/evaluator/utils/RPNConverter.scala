@@ -1,6 +1,7 @@
 package pdorobisz.evaluator.utils
 
 import pdorobisz.evaluator.errors.{InvalidIdentifier, EvaluatorError, LeftParenthesisNotMatched, RightParenthesisNotMatched}
+import pdorobisz.evaluator.tokens.TokenFactory._
 import pdorobisz.evaluator.tokens._
 
 import scala.collection.mutable
@@ -31,15 +32,15 @@ object RPNConverter {
       (m.matched, previous) match {
         case Operator(operator) =>
           while (operatorOnStackHasHigherPrecedence(operator, stack)) output += stack.pop()
-          stack.push(TokenPosition(position, operator))
+          stack push TokenPosition(position, operator)
         case ("(", _) =>
-          stack.push(TokenPosition(position, LeftParenthesis))
+          stack push leftParen(position)
         case (")", _) =>
           addOperatorsToOutput(stack, output)
           if (stack.isEmpty) return Failure(RightParenthesisNotMatched(position))
           stack.pop()
-        case (value, _) if isNotEmpty(value) =>
-          output += TokenPosition(position, Value(value.toInt))
+        case (v, _) if isNotEmpty(v) =>
+          output += value(position, v.toInt)
         case _ => None
       }
       previous = m.matched

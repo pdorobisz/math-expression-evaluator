@@ -2,7 +2,7 @@ package pdorobisz.evaluator.tokens
 
 import spire.math.Rational
 
-trait TokenFactory {
+object TokenFactory {
   def value(pos: Int, value: Int): TokenPosition = TokenPosition(pos, Value(Rational(value)))
 
   def addition(pos: Int): TokenPosition = TokenPosition(pos, Addition)
@@ -14,4 +14,6 @@ trait TokenFactory {
   def division(pos: Int): TokenPosition = TokenPosition(pos, Division)
 
   def unaryMinus(pos: Int): TokenPosition = TokenPosition(pos, UnaryMinus)
+
+  def leftParen(pos: Int): TokenPosition = TokenPosition(pos, LeftParenthesis)
 }

@@ -2,10 +2,10 @@ package pdorobisz.evaluator.test
 
 import org.scalatest.prop.Tables.Table
 import pdorobisz.evaluator.errors._
-import pdorobisz.evaluator.tokens.TokenFactory
+import pdorobisz.evaluator.tokens.TokenFactory._
 import spire.math.Rational
 
-object TestData extends TokenFactory {
+object TestData {
 
   val correctExpressions = Table(
     ("expression", "RPN form", "evaluation result"),
