@@ -77,6 +77,11 @@ object TestData {
 
   val notEvaluableExpressions = Table(
     ("not evaluable expression", "RPN form", "expected error"),
+
+    // empty expression
+    ("", Seq(), EmptyExpression(0)),
+    (" ", Seq(), EmptyExpression(0)),
+
     // misplaced operators
     ("10+", Seq(value(0, 10), addition(2)), MisplacedOperator(2)),
     ("+10", Seq(value(1, 10), addition(0)), MisplacedOperator(0)),
