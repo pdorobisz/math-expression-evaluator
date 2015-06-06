@@ -1,11 +1,9 @@
 package pdorobisz.evaluator.utils
 
-import pdorobisz.evaluator.errors.{InvalidIdentifier, EvaluatorError, LeftParenthesisNotMatched, RightParenthesisNotMatched}
-import pdorobisz.evaluator.tokens.TokenFactory._
+import pdorobisz.evaluator.errors.{EvaluatorError, InvalidIdentifier, LeftParenthesisNotMatched, RightParenthesisNotMatched}
 import pdorobisz.evaluator.tokens._
 
 import scala.collection.mutable
-import scala.collection.mutable.ArrayBuffer
 import scalaz.{Failure, Success, Validation}
 
 /**
@@ -22,46 +20,57 @@ object RPNConverter {
    * @return sequence of tokens representing expression in Reverse Polish Notation or error
    */
   def convert(expression: String): Validation[EvaluatorError, Seq[TokenPosition]] = {
+    val expressionWithoutTrailingSpaces = expression.replaceAll( """(?m)\s+$""", "")
     val stack = mutable.Stack[TokenPosition]()
     val output = mutable.ArrayBuffer[TokenPosition]()
     var endPosition = 0
-    var previous = ""
+    var previousToken: Option[Token] = None
 
-    (pattern findAllIn expression).matchData foreach { m => {
+    (pattern findAllIn expressionWithoutTrailingSpaces).matchData filterNot (_.matched.trim.isEmpty) foreach { m => {
       val position: Int = m.start
-      (m.matched, previous) match {
-        case Operator(operator) =>
-          while (operatorOnStackHasHigherPrecedence(operator, stack)) output += stack.pop()
-          stack push TokenPosition(position, operator)
-        case ("(", _) =>
-          stack push leftParen(position)
-        case (")", _) =>
-          addOperatorsToOutput(stack, output)
+      val token: Token = getToken(m.matched, previousToken)
+
+      token match {
+        case LeftParenthesis =>
+          stack push TokenPosition(position, LeftParenthesis)
+        case RightParenthesis =>
+          while (leftParenthesisNotOnTop(stack)) output += stack.pop()
           if (stack.isEmpty) return Failure(RightParenthesisNotMatched(position))
           stack.pop()
-        case (v, _) if isNotEmpty(v) =>
-          output += value(position, v.toInt)
-        case _ => None
+        case v@Value(_) =>
+          output += TokenPosition(position, v)
+        case op@Operator(operator) =>
+          while (operatorOnStackHasHigherPrecedence(operator, stack)) output += stack.pop()
+          stack push TokenPosition(position, op)
       }
-      previous = m.matched
+      previousToken = Some(token)
       endPosition = m.end
     }
     }
 
-    if (endPosition != expression.length) return Failure(InvalidIdentifier(endPosition))
-    addOperatorsToOutput(stack, output)
+    if (endPosition != expressionWithoutTrailingSpaces.length) return Failure(InvalidIdentifier(endPosition))
+    while (leftParenthesisNotOnTop(stack)) output += stack.pop()
     if (stack.nonEmpty) return Failure(LeftParenthesisNotMatched(stack.head.position))
     Success(output)
   }
 
-  private def operatorOnStackHasHigherPrecedence(operator: Operator, stack: mutable.Stack[TokenPosition]): Boolean =
-    stack.headOption.exists(_.token.isInstanceOf[Operator]) &&
-      operator.precedence <= stack.top.token.asInstanceOf[Operator].precedence
-
-  private def addOperatorsToOutput(stack: mutable.Stack[TokenPosition], output: ArrayBuffer[TokenPosition]) {
-    while (stack.headOption.exists(_.token != LeftParenthesis)) output += stack.pop()
+  private def getToken(s: String, previous: Option[Token]): Token = s match {
+    case "(" => LeftParenthesis
+    case ")" => RightParenthesis
+    case "+" => Operator(Addition)
+    case "-" => if (previous.isEmpty || previous.get == LeftParenthesis) Operator(UnaryMinus) else Operator(Subtraction)
+    case "*" => Operator(Multiplication)
+    case "/" => Operator(Division)
+    case v => Value(v.toInt)
   }
 
-  private def isNotEmpty(s: String): Boolean = !s.trim.isEmpty
+  private def operatorOnStackHasHigherPrecedence(operator: OperatorType, stack: mutable.Stack[TokenPosition]): Boolean =
+    stack.headOption match {
+      case Some(TokenPosition(_, Operator(operatorOnStack))) => operator.precedence <= operatorOnStack.precedence
+      case _ => false
+    }
 
+  def leftParenthesisNotOnTop(stack: mutable.Stack[TokenPosition]): Boolean = {
+    stack.headOption.exists(_.token != LeftParenthesis)
+  }
 }

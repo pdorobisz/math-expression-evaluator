@@ -1,7 +1,7 @@
 package pdorobisz.evaluator.utils
 
 import pdorobisz.evaluator.errors.{MisplacedOperator, EvaluatorError}
-import pdorobisz.evaluator.tokens.{Operator, TokenPosition, Value}
+import pdorobisz.evaluator.tokens.{OperatorType, Operator, TokenPosition, Value}
 import spire.math.Rational
 
 import scala.collection.mutable
@@ -21,7 +21,7 @@ object RPNEvaluator {
   def evaluate(expression: Seq[TokenPosition]): Validation[EvaluatorError, Rational] = {
     val stack = mutable.Stack[Rational]()
     expression foreach {
-      case TokenPosition(pos, operator: Operator) => getArguments(stack, operator) match {
+      case TokenPosition(pos, Operator(operator)) => getArguments(stack, operator) match {
         case Some(args) => operator(args) match {
           case Success(result) => stack.push(result)
           case Failure(error) => return Failure(EvaluatorError.fromOperatorError(pos, error))
@@ -33,7 +33,7 @@ object RPNEvaluator {
     Success(stack.pop())
   }
 
-  private def getArguments(stack: mutable.Stack[Rational], operator: Operator): Option[IndexedSeq[Rational]] = {
+  private def getArguments(stack: mutable.Stack[Rational], operator: OperatorType): Option[IndexedSeq[Rational]] = {
     if (stack.nonEmpty) {
       val arg = stack.pop()
       if (operator.unary) return Some(IndexedSeq(arg))
