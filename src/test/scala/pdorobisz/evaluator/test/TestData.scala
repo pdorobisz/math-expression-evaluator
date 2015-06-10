@@ -72,7 +72,37 @@ object TestData {
     ("(1))", RightParenthesisNotMatched(3)),
     ("(1 ) )", RightParenthesisNotMatched(5)),
     ("(1+2", LeftParenthesisNotMatched(0)),
-    ("1+2)", RightParenthesisNotMatched(3))
+    ("1+2)", RightParenthesisNotMatched(3)),
+    ("(1+2)+(3+", LeftParenthesisNotMatched(6)),
+
+    // misplaced operators
+    ("+10", MisplacedOperator(0)),
+    ("*10", MisplacedOperator(0)),
+    ("/10", MisplacedOperator(0)),
+    ("+1 2", MisplacedOperator(0)),
+    ("5++6", MisplacedOperator(2)),
+    ("5+-6", MisplacedOperator(2)),
+    ("5+*6", MisplacedOperator(2)),
+    ("5+/6", MisplacedOperator(2)),
+    ("(+6)", MisplacedOperator(1)),
+    ("(*6)", MisplacedOperator(1)),
+    ("(/6)", MisplacedOperator(1)),
+    ("++1", MisplacedOperator(0)),
+    ("--1", MisplacedOperator(1)),
+    ("- - 1", MisplacedOperator(2)),
+    ("+", MisplacedOperator(0)),
+
+    // misplaced values
+    ("5 6", MisplacedValue(2)),
+    ("5+6 7", MisplacedValue(4)),
+    ("(6)7", MisplacedValue(3)),
+
+    // misplaced parenthesis
+    ("()", MisplacedParenthesis(1)),
+    (")", MisplacedParenthesis(0)),
+    ("1(2)", MisplacedParenthesis(1)),
+    ("(1)(2)", MisplacedParenthesis(3)),
+    ("1+)2", MisplacedParenthesis(2))
   )
 
   val notEvaluableExpressions = Table(
@@ -84,15 +114,6 @@ object TestData {
 
     // misplaced operators
     ("10+", Seq(value(0, 10), addition(2)), MisplacedOperator(2)),
-    ("+10", Seq(value(1, 10), addition(0)), MisplacedOperator(0)),
-    ("5++6", Seq(value(0, 5), addition(1), value(3, 6), addition(2)), MisplacedOperator(1)),
-    ("5+-6", Seq(value(0, 5), addition(1), value(3, 6), subtraction(2)), MisplacedOperator(1)),
-    ("5*/6", Seq(value(0, 5), multiplication(1), value(3, 6), division(2)), MisplacedOperator(1)),
-    ("5+/6", Seq(value(0, 5), value(3, 6), division(2), addition(1)), MisplacedOperator(1)),
-    ("++1", Seq(addition(0), value(2, 1), addition(1)), MisplacedOperator(0)),
-    ("--1", Seq(unaryMinus(0), value(2, 1), subtraction(1)), MisplacedOperator(0)),
-    ("- - 1", Seq(unaryMinus(0), value(4, 1), subtraction(2)), MisplacedOperator(0)),
-    ("+", Seq(addition(0)), MisplacedOperator(0)),
     ("-", Seq(unaryMinus(0)), MisplacedOperator(0)),
 
     // divide by zero

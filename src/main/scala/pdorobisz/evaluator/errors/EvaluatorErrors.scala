@@ -20,4 +20,8 @@ case class InvalidIdentifier(position: Int) extends EvaluatorError
 
 case class MisplacedOperator(position: Int) extends EvaluatorError
 
+case class MisplacedValue(position: Int) extends EvaluatorError
+
+case class MisplacedParenthesis(position: Int) extends EvaluatorError
+
 case class DivideByZero(position: Int) extends EvaluatorError
