@@ -10,9 +10,7 @@ object EvaluatorError {
   }
 }
 
-case class LeftParenthesisNotMatched(position: Int) extends EvaluatorError
-
-case class RightParenthesisNotMatched(position: Int) extends EvaluatorError
+case class ParenthesisNotMatched(position: Int) extends EvaluatorError
 
 case class EmptyExpression(position: Int) extends EvaluatorError
 

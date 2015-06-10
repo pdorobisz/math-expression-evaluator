@@ -35,7 +35,7 @@ object RPNConverter {
               stack push TokenPosition(position, LeftParenthesis)
             case RightParenthesis =>
               while (leftParenthesisNotOnTop(stack)) output += stack.pop()
-              if (stack.isEmpty) return Failure(RightParenthesisNotMatched(position))
+              if (stack.isEmpty) return Failure(ParenthesisNotMatched(position))
               stack.pop()
             case v@Value(_) =>
               output += TokenPosition(position, v)
@@ -52,7 +52,7 @@ object RPNConverter {
 
     if (endPosition != expressionWithoutTrailingSpaces.length) return Failure(InvalidIdentifier(endPosition))
     while (leftParenthesisNotOnTop(stack)) output += stack.pop()
-    if (stack.nonEmpty) return Failure(LeftParenthesisNotMatched(stack.head.position))
+    if (stack.nonEmpty) return Failure(ParenthesisNotMatched(stack.head.position))
     Success(output)
   }
 
