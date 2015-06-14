@@ -28,7 +28,7 @@ object RPNConverter {
 
     (pattern findAllIn expressionWithoutTrailingSpaces).matchData filterNot (_.matched.trim.isEmpty) foreach { m => {
       val position: Int = m.start
-      parseToken(position, m.matched, previousToken) match {
+      TokenParser.parseToken(position, m.matched, previousToken) match {
         case Success(token) =>
           token match {
             case LeftParenthesis =>
@@ -54,24 +54,6 @@ object RPNConverter {
     while (leftParenthesisNotOnTop(stack)) output += stack.pop()
     if (stack.nonEmpty) return Failure(ParenthesisNotMatched(stack.head.position))
     Success(output)
-  }
-
-  private def parseToken(position: Int, s: String, previous: Option[Token]): Validation[EvaluatorError, Token] = (s, previous) match {
-    case ("(", Some(RightParenthesis | Value(_))) => Failure(MisplacedParenthesis(position))
-    case ("(", _) => Success(LeftParenthesis)
-    case (")", None | Some(Operator(_) | LeftParenthesis)) => Failure(MisplacedParenthesis(position))
-    case (")", _) => Success(RightParenthesis)
-    case ("+", None | Some(LeftParenthesis | Operator(_))) => Failure(MisplacedOperator(position))
-    case ("+", _) => Success(Operator(Addition))
-    case ("-", None | Some(LeftParenthesis)) => Success(Operator(UnaryMinus))
-    case ("-", Some(Operator(_))) => Failure(MisplacedOperator(position))
-    case ("-", _) => Success(Operator(Subtraction))
-    case ("*", None | Some(LeftParenthesis | Operator(_))) => Failure(MisplacedOperator(position))
-    case ("*", _) => Success(Operator(Multiplication))
-    case ("/", None | Some(LeftParenthesis | Operator(_))) => Failure(MisplacedOperator(position))
-    case ("/", _) => Success(Operator(Division))
-    case (v, Some(RightParenthesis | Value(_))) => Failure(MisplacedValue(position))
-    case (v, _) => Success(Value(v.toInt))
   }
 
   private def operatorOnStackHasHigherPrecedence(operator: OperatorType, stack: mutable.Stack[TokenPosition]): Boolean =
