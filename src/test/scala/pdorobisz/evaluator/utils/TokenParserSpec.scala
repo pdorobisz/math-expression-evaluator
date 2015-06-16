@@ -2,7 +2,8 @@ package pdorobisz.evaluator.utils
 
 import org.scalatest.prop.TableDrivenPropertyChecks
 import org.scalatest.{Matchers, PropSpec}
-import pdorobisz.evaluator.errors.{MisplacedOperator, MisplacedValue, MisplacedParenthesis}
+import pdorobisz.evaluator.errors.{MisplacedOperator, MisplacedParenthesis, MisplacedValue}
+import pdorobisz.evaluator.operators._
 import pdorobisz.evaluator.tokens._
 
 import scalaz.{Failure, Success}

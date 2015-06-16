@@ -1,9 +1,10 @@
 package pdorobisz.evaluator.utils
 
-import pdorobisz.evaluator.errors.{MisplacedValue, MisplacedOperator, MisplacedParenthesis, EvaluatorError}
+import pdorobisz.evaluator.errors.{EvaluatorError, MisplacedOperator, MisplacedParenthesis, MisplacedValue}
+import pdorobisz.evaluator.operators._
 import pdorobisz.evaluator.tokens._
 
-import scalaz.{Success, Failure, Validation}
+import scalaz.{Failure, Success, Validation}
 
 object TokenParser {
 

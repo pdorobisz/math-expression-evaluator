@@ -1,6 +1,7 @@
 package pdorobisz.evaluator.utils
 
 import pdorobisz.evaluator.errors._
+import pdorobisz.evaluator.operators.OperatorType
 import pdorobisz.evaluator.tokens._
 
 import scala.collection.mutable

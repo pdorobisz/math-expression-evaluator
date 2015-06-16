@@ -1,7 +1,8 @@
 package pdorobisz.evaluator.utils
 
-import pdorobisz.evaluator.errors.{EmptyExpression, MisplacedOperator, EvaluatorError}
-import pdorobisz.evaluator.tokens.{OperatorType, Operator, TokenPosition, Value}
+import pdorobisz.evaluator.errors.{EmptyExpression, EvaluatorError, MisplacedOperator}
+import pdorobisz.evaluator.operators.OperatorType
+import pdorobisz.evaluator.tokens.{Operator, TokenPosition, Value}
 import spire.math.Rational
 
 import scala.collection.mutable

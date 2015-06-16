@@ -1,5 +1,6 @@
 package pdorobisz.evaluator.tokens
 
+import pdorobisz.evaluator.operators._
 import spire.math.Rational
 
 object TokenFactory {
