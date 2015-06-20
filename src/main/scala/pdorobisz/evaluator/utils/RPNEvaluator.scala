@@ -1,7 +1,6 @@
 package pdorobisz.evaluator.utils
 
-import pdorobisz.evaluator.errors.{EmptyExpression, EvaluatorError, MisplacedOperator}
-import pdorobisz.evaluator.operators.OperatorType
+import pdorobisz.evaluator.errors.{EmptyExpression, EvaluatorError}
 import pdorobisz.evaluator.tokens.{Operator, TokenPosition, Value}
 import spire.math.Rational
 
@@ -22,27 +21,12 @@ object RPNEvaluator {
   def evaluate(expression: Seq[TokenPosition]): Validation[EvaluatorError, Rational] = {
     val valueStack = mutable.Stack[Rational]()
     expression foreach {
-      case TokenPosition(pos, Operator(operator)) => getArguments(valueStack, operator) match {
-        case Some(args) => operator(args) match {
-          case Success(result) => valueStack.push(result)
-          case Failure(error) => return Failure(EvaluatorError.fromOperatorError(pos, error))
-        }
-        case None => return Failure(MisplacedOperator(pos))
+      case TokenPosition(pos, Operator(operator)) => OperatorEvaluator.evaluateOperator(operator, pos, valueStack) match {
+        case Success(result) => valueStack.push(result)
+        case failure => return failure
       }
       case TokenPosition(pos, Value(value)) => valueStack.push(value)
     }
-    if (valueStack.size == 0)
-      Failure(EmptyExpression(0))
-    else
-      Success(valueStack.pop())
-  }
-
-  private def getArguments(valueStack: mutable.Stack[Rational], operator: OperatorType): Option[IndexedSeq[Rational]] = {
-    if (valueStack.nonEmpty) {
-      val arg = valueStack.pop()
-      if (operator.unary) return Some(IndexedSeq(arg))
-      if (valueStack.nonEmpty) return Some(IndexedSeq(valueStack.pop(), arg))
-    }
-    None
+    if (valueStack.size == 0) Failure(EmptyExpression(0)) else Success(valueStack.pop())
   }
 }
