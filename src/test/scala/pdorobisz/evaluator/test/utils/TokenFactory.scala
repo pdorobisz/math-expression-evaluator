@@ -1,9 +1,11 @@
-package pdorobisz.evaluator.tokens
+package pdorobisz.evaluator.test.utils
 
 import pdorobisz.evaluator.operators._
+import pdorobisz.evaluator.tokens.{LeftParenthesis, Operator, TokenPosition, Value}
 import spire.math.Rational
 
 object TokenFactory {
+
   def value(pos: Int, value: Int): TokenPosition = TokenPosition(pos, Value(Rational(value)))
 
   def addition(pos: Int): TokenPosition = TokenPosition(pos, Operator(Addition))
