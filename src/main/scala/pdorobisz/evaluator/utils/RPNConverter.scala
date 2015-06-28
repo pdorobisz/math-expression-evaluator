@@ -29,25 +29,21 @@ object RPNConverter {
 
     (pattern findAllIn expressionWithoutTrailingSpaces).matchData filterNot (_.matched.trim.isEmpty) foreach { m => {
       val position: Int = m.start
-      TokenParser.parseToken(position, m.matched, previousToken) match {
-        case Success(token) =>
-          token match {
-            case LeftParenthesis =>
-              stack push TokenPosition(position, LeftParenthesis)
-            case RightParenthesis =>
-              while (leftParenthesisNotOnTop(stack)) output += stack.pop()
-              if (stack.isEmpty) return Failure(ParenthesisNotMatched(position))
-              stack.pop()
-            case v@Value(_) =>
-              output += TokenPosition(position, v)
-            case op@Operator(operator) =>
-              while (operatorOnStackHasHigherPrecedence(operator, stack)) output += stack.pop()
-              stack push TokenPosition(position, op)
-          }
-          previousToken = Some(token)
-          endPosition = m.end
+      val parsedToken: Validation[EvaluatorError, Token] = TokenParser.parseToken(position, m.matched, previousToken)
+      parsedToken match {
+        case Success(v@Value(_)) => output += TokenPosition(position, v)
+        case Success(LeftParenthesis) => stack push TokenPosition(position, LeftParenthesis)
+        case Success(RightParenthesis) =>
+          while (leftParenthesisNotOnTop(stack)) output += stack.pop()
+          if (stack.isEmpty) return Failure(ParenthesisNotMatched(position))
+          stack.pop()
+        case Success(op@Operator(operator)) =>
+          while (operatorOnStackHasHigherPrecedence(operator, stack)) output += stack.pop()
+          stack push TokenPosition(position, op)
         case f@Failure(e) => return f
       }
+      previousToken = parsedToken.map(Some(_)).getOrElse(None)
+      endPosition = m.end
     }
     }
 
