@@ -1,6 +1,7 @@
 package pdorobisz.evaluator.utils
 
 import pdorobisz.evaluator.errors.{EmptyExpression, EvaluatorError}
+import pdorobisz.evaluator.rpn.AbstractRPNEvaluator
 import pdorobisz.evaluator.tokens.{Operator, TokenPosition, Value}
 import spire.math.Rational
 
@@ -10,7 +11,7 @@ import scalaz.{Failure, Success, Validation}
 /**
  * Reverse Polish Notation evaluator.
  */
-object RPNEvaluator {
+object RPNEvaluator extends AbstractRPNEvaluator[Rational] {
 
   /**
    * Evaluates expression in Reverse Polish Notation.
@@ -20,13 +21,24 @@ object RPNEvaluator {
    */
   def evaluate(expression: Seq[TokenPosition]): Validation[EvaluatorError, Rational] = {
     val valueStack = mutable.Stack[Rational]()
-    expression foreach {
-      case TokenPosition(pos, Operator(operator)) => OperatorEvaluator.evaluateOperator(operator, pos, valueStack) match {
-        case Success(result) => valueStack.push(result)
-        case failure => return failure
-      }
-      case TokenPosition(pos, Value(value)) => valueStack.push(value)
+    val stack: mutable.Stack[TokenPosition] = mutable.Stack(expression: _*)
+    evaluateOperatorsOnStack(stack, valueStack, _ => true) match {
+      case Success(_) if valueStack.isEmpty => Failure(EmptyExpression(0))
+      case Success(_) => Success(valueStack.pop())
+      case f@Failure(_) => f
     }
-    if (valueStack.size == 0) Failure(EmptyExpression(0)) else Success(valueStack.pop())
   }
+
+  override protected def processOperator(tokenPosition: TokenPosition, output: mutable.Stack[Rational]): Validation[EvaluatorError, Unit] =
+    tokenPosition match {
+      case TokenPosition(pos, Operator(operator)) => OperatorEvaluator.evaluateOperator(operator, pos, output) match {
+        case Success(result) =>
+          output.push(result)
+          Success(Unit)
+        case f@Failure(_) => f
+      }
+      case TokenPosition(pos, Value(value)) =>
+        output.push(value)
+        Success(Unit)
+    }
 }
