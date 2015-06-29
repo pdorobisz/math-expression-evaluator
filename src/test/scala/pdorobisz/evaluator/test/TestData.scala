@@ -2,9 +2,7 @@ package pdorobisz.evaluator.test
 
 import org.scalatest.prop.Tables.Table
 import pdorobisz.evaluator.errors._
-import pdorobisz.evaluator.test.utils.TokenFactory
-import TokenFactory._
-import pdorobisz.evaluator.test.utils.TokenFactory
+import pdorobisz.evaluator.test.utils.TokenFactory._
 import spire.math.Rational
 
 object TestData {
@@ -120,6 +118,7 @@ object TestData {
 
     // divide by zero
     ("1/0", Seq(value(0, 1), value(2, 0), division(1)), DivideByZero(1)),
+    ("(1/0)", Seq(value(1, 1), value(3, 0), division(2)), DivideByZero(2)),
     ("1/1/0", Seq(value(0, 1), value(2, 1), division(1), value(4, 0), division(3)), DivideByZero(3)),
     ("1/(2-2)", Seq(value(0, 1), value(3, 2), value(5, 2), subtraction(4), division(1)), DivideByZero(1))
   )
