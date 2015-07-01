@@ -1,8 +1,7 @@
-package pdorobisz.evaluator.utils
+package pdorobisz.evaluator.tokens
 
 import pdorobisz.evaluator.errors.{EvaluatorError, MisplacedOperator, MisplacedParenthesis, MisplacedValue}
 import pdorobisz.evaluator.operators._
-import pdorobisz.evaluator.tokens._
 
 import scalaz.{Failure, Success, Validation}
 

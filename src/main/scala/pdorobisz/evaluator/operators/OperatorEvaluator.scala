@@ -1,7 +1,6 @@
-package pdorobisz.evaluator.utils
+package pdorobisz.evaluator.operators
 
-import pdorobisz.evaluator.errors.{MisplacedOperator, EvaluatorError}
-import pdorobisz.evaluator.operators.OperatorType
+import pdorobisz.evaluator.errors.{EvaluatorError, MisplacedOperator}
 import spire.math.Rational
 
 import scala.collection.mutable

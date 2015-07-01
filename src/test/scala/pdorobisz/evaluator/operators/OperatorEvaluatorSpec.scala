@@ -1,9 +1,8 @@
-package pdorobisz.evaluator.utils
+package pdorobisz.evaluator.operators
 
 import org.scalatest.prop.TableDrivenPropertyChecks
 import org.scalatest.{Matchers, PropSpec}
 import pdorobisz.evaluator.errors.{DivideByZero, MisplacedOperator}
-import pdorobisz.evaluator.operators.{Addition, Division, Subtraction, UnaryMinus}
 import spire.math.Rational
 
 import scala.collection.mutable

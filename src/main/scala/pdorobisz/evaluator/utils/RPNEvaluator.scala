@@ -1,6 +1,7 @@
 package pdorobisz.evaluator.utils
 
 import pdorobisz.evaluator.errors.{EmptyExpression, EvaluatorError}
+import pdorobisz.evaluator.operators.OperatorEvaluator
 import pdorobisz.evaluator.rpn.AbstractRPNEvaluator
 import pdorobisz.evaluator.tokens.{Operator, TokenPosition, Value}
 import spire.math.Rational

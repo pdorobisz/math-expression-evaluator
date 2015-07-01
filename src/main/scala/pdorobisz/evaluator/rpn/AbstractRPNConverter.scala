@@ -2,7 +2,6 @@ package pdorobisz.evaluator.rpn
 
 import pdorobisz.evaluator.errors.{EvaluatorError, InvalidIdentifier, ParenthesisNotMatched}
 import pdorobisz.evaluator.tokens._
-import pdorobisz.evaluator.utils.TokenParser
 
 import scala.collection.mutable
 import scalaz.{Failure, Success, Validation}
