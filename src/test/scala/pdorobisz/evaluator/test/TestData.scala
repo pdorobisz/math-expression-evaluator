@@ -2,7 +2,7 @@ package pdorobisz.evaluator.test
 
 import org.scalatest.prop.Tables.Table
 import pdorobisz.evaluator.errors._
-import pdorobisz.evaluator.test.utils.TokenFactory._
+import pdorobisz.evaluator.tokens.TokenFactory._
 import spire.math.Rational
 
 object TestData {
