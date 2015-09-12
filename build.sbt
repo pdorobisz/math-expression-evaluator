@@ -2,6 +2,8 @@ name := "math-expression-evaluator"
 
 version := "1.0"
 
+organization := "com.github.pdorobisz"
+
 scalaVersion := "2.11.4"
 
 libraryDependencies += "org.scalatest" % "scalatest_2.11" % "2.2.2" % "test"
