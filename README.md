@@ -10,11 +10,11 @@ Supported operations and expressions:
 
 ## Usage
 ### Evaluating expressions
-`pdorobisz.evaluator.Evaluator.evaluate` takes string representing expression in infix notation (may contain spaces) and returns
+`com.github.pdorobisz.mathevaluator.Evaluator.evaluate` takes string representing expression in infix notation (may contain spaces) and returns
 evaluation result as `Validation` from [Scalaz](https://github.com/scalaz/scalaz):
 ```scala
-    import pdorobisz.evaluator.Evaluator
-    import pdorobisz.evaluator.errors.EvaluatorError
+    import com.github.pdorobisz.mathevaluator.Evaluator
+    import com.github.pdorobisz.mathevaluator.errors.EvaluatorError
     import spire.math.Rational
     import scalaz.Validation
 
@@ -26,7 +26,7 @@ represents evaluated value.
 
 Some examples:
 ```scala
-    import pdorobisz.evaluator.Evaluator
+    import com.github.pdorobisz.mathevaluator.Evaluator
 
     println(Evaluator.evaluate("1+2*3"))         // Success(7)
     println(Evaluator.evaluate("4 / (2*3 + 2)")) // Success(1/2)
@@ -38,9 +38,9 @@ Some examples:
 As a part of evaluation process expression is converted to *Reverse Polish Notation*. It is possible to get expression converted to
 this form instead of evaluated value:
 ```scala
-    import pdorobisz.evaluator.errors.EvaluatorError
-    import pdorobisz.evaluator.tokens.TokenPosition
-    import pdorobisz.evaluator.utils.RPNConverter
+    import com.github.pdorobisz.mathevaluator.errors.EvaluatorError
+    import com.github.pdorobisz.mathevaluator.tokens.TokenPosition
+    import com.github.pdorobisz.mathevaluator.utils.RPNConverter
     import scalaz.Validation
 
     val result: Validation[EvaluatorError, Seq[TokenPosition]] = RPNConverter.convert("(3+7)*2")
@@ -49,8 +49,8 @@ this form instead of evaluated value:
 
 ### Evaluating expressions in postfix form (**Reverse Polish Notation**)
 ```scala
-    import pdorobisz.evaluator.tokens.TokenFactory._
-    import pdorobisz.evaluator.utils.RPNEvaluator
+    import com.github.pdorobisz.mathevaluator.tokens.TokenFactory._
+    import com.github.pdorobisz.mathevaluator.utils.RPNEvaluator
 
     val rpn = Seq(value(1, 2), value(3, 3), addition(2), value(6, 5), multiplication(5)) // (2+3)*5
     println(RPNEvaluator.evaluate(rpn))
