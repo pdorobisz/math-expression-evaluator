@@ -55,3 +55,12 @@ this form instead of evaluated value:
     val rpn = Seq(value(1, 2), value(3, 3), addition(2), value(6, 5), multiplication(5)) // (2+3)*5
     println(RPNEvaluator.evaluate(rpn))
 ```
+
+### Implicit conversions
+To make your life easier you can use implicit conversions to add new methods:
+```scala
+    import com.github.pdorobisz.mathevaluator.utils.EvaluatorImplicits._
+
+    val rpnForm = "3+5*6".toRPN
+    val evaluationResult= "3+5*6".evaluateExpression
+```
