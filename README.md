@@ -8,6 +8,13 @@ Supported operations and expressions:
 * Unary minus
 * Parentheses
 
+## Set up
+Install to your local repository with `sbt publishLocal` and add dependency to your project:
+
+```
+libraryDependencies += "com.github.pdorobisz" %% "math-expression-evaluator" % "1.0"
+```
+
 ## Usage
 ### Evaluating expressions
 `com.github.pdorobisz.mathevaluator.Evaluator.evaluate` takes string representing expression in infix notation (may contain spaces) and returns
