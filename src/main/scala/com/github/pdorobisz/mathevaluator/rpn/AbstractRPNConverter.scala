@@ -21,7 +21,7 @@ trait AbstractRPNConverter[OUT] {
    * @param expression string representing expression in infix notation
    * @return sequence of tokens representing expression in Reverse Polish Notation or error
    */
-  def parseExpression(expression: String): Validation[EvaluatorError, Seq[OUT]] = {
+  protected def parseExpression(expression: String): Validation[EvaluatorError, Seq[OUT]] = {
     val expressionWithoutTrailingSpaces = expression.replaceAll( """(?m)\s+$""", "")
     val stack = mutable.Stack[TokenPosition]()
     val output = mutable.Stack[OUT]()

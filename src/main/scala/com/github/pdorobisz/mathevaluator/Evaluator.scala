@@ -27,9 +27,9 @@ object Evaluator extends AbstractRPNConverter[Rational] with AbstractRPNEvaluato
     case f@Failure(_) => f
   }
 
-  override def convertValue(position: Int, v: Value): Rational = v.value
+  override protected def convertValue(position: Int, v: Value): Rational = v.value
 
-  override def processOperator(tokenPosition: TokenPosition, output: mutable.Stack[Rational]): Validation[EvaluatorError, Unit] =
+  override protected def processOperator(tokenPosition: TokenPosition, output: mutable.Stack[Rational]): Validation[EvaluatorError, Unit] =
     tokenPosition match {
       case TokenPosition(position, Operator(operator)) => OperatorEvaluator.evaluateOperator(operator, position, output) match {
         case Success(v) =>

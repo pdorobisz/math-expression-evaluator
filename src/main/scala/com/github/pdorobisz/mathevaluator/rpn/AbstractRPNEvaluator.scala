@@ -21,7 +21,7 @@ trait AbstractRPNEvaluator[OUT] {
    * @param condition evaluation condition (if condition is not met by element on stack evaluation loop breaks)
    * @return no result or error when evaluation failed
    */
-  def evaluateOperatorsOnStack(stack: mutable.Stack[TokenPosition], output: mutable.Stack[OUT], condition: TokenPosition => Boolean): Validation[EvaluatorError, Unit] = {
+  protected def evaluateOperatorsOnStack(stack: mutable.Stack[TokenPosition], output: mutable.Stack[OUT], condition: TokenPosition => Boolean): Validation[EvaluatorError, Unit] = {
     while (stack.headOption.exists(condition)) {
       processOperator(stack.pop(), output) match {
         case f@Failure(_) => return f
