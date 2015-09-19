@@ -16,22 +16,22 @@ libraryDependencies += "org.spire-math" %% "spire" % "0.10.1"
 
 pomExtra in Global := {
   <url>https://github.com/pdorobisz/math-expression-evaluator</url>
-    <licenses>
-      <license>
-        <name>Apache 2</name>
-        <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-      </license>
-    </licenses>
-    <scm>
-      <connection>scm:git:git@github.com:pdorobisz/math-expression-evaluator.git</connection>
-      <developerConnection>scm:git:git@github.com:pdorobisz/math-expression-evaluator.git</developerConnection>
-      <url>git@github.com:pdorobisz/math-expression-evaluator.git</url>
-    </scm>
-    <developers>
-      <developer>
-        <id>pdorobisz</id>
-        <name>Piotr Dorobisz</name>
-        <url>https://github.com/pdorobisz/</url>
-      </developer>
-    </developers>
+  <licenses>
+    <license>
+      <name>Apache 2</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
+  </licenses>
+  <scm>
+    <connection>scm:git:git@github.com:pdorobisz/math-expression-evaluator.git</connection>
+    <developerConnection>scm:git:git@github.com:pdorobisz/math-expression-evaluator.git</developerConnection>
+    <url>git@github.com:pdorobisz/math-expression-evaluator.git</url>
+  </scm>
+  <developers>
+    <developer>
+      <id>pdorobisz</id>
+      <name>Piotr Dorobisz</name>
+      <url>https://github.com/pdorobisz/</url>
+    </developer>
+  </developers>
 }
