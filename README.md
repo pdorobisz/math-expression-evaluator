@@ -11,10 +11,10 @@ Supported operations and expressions:
 * Parentheses
 
 ### Set up
-Install to your local repository with `sbt publishLocal` and add dependency to your project:
+Add dependency to your project (currently there is only version for Scala 2.11):
 
 ```
-libraryDependencies += "com.github.pdorobisz" %% "math-expression-evaluator" % "1.0"
+libraryDependencies += "com.github.pdorobisz" %% "math-expression-evaluator" % "1.0.0"
 ```
 
 ### Usage
